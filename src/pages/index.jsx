@@ -1,45 +1,171 @@
-import reactLogo from '@/assets/react.svg'
-import fgaTechLogo from '/fga_tech.png'
-import { useState} from "react";
-import {useNavigate} from "react-router-dom";
-import ProfileToken from "@/components/profile-token.jsx";
-import {useUserStore} from "@/store/user-store.js";
-import {useTranslation} from "react-i18next";
+import {jwtDecode} from "jwt-decode";
+import {useEffect, useState} from "react";
+import reactLogo from '../assets/react.svg'
 
 
 export default function Index() {
-    const [count, setCount] = useState(0)
-    const navigate = useNavigate();
-    const [UID,language] = useUserStore(state => [state.UID,state.language]);
-    const {t} =  useTranslation();
+    function handleClose1() {
+        window.open('https://back.fgacyc.com/', "_self")
+    }
 
+    function extractTokenAndLanguage(url) {
+        let regex = /token=([^&]+).*?&language=([^&]+)/;
+        let match = url.match(regex);
+        if (match) {
+            let token = match[1];
+            let language = match[2];
+            return { token: token, language: language };
+        } else {
+            return { token: null, language: null };
+        }
+    }
+
+    const [url, setUrl] = useState('');
+    const [token, setToken] = useState('');
+    const [decoded, setDecoded] = useState('');
+    const [userInfo, setUserInfo] = useState('');
+    const [error, setError] = useState('');
+    const [language, setLanguage] = useState('');
+
+    useEffect(() => {
+        const currentUrl = window.location.href;
+        setUrl(currentUrl);
+        const { token, language } = extractTokenAndLanguage(currentUrl);
+        if (!token) return;
+        setToken(token);
+
+        if (language) {
+            setLanguage(language);
+        }else {
+            setLanguage('en');
+        }
+
+
+        try {
+            // console.log(token)
+            const decodedData = jwtDecode(token) ;
+            setDecoded(decodedData);
+        } catch (error) {
+            setError(error);
+            // console.error(error);
+        }
+
+
+    }, []);
+
+
+    useEffect(() => {
+        async function getUserInfo() {
+            const domain = decoded.aud[1];
+            const response = await fetch(domain, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            setUserInfo(data);
+        }
+        if (decoded) {
+            getUserInfo();
+        }
+    }, [decoded]);
 
     return (
-        <div className={"h-screen flex flex-col justify-center items-center"}>
-            <ProfileToken/>
-            <div className={"flex flex-row justify-between items-center w-[300px] "}>
-                <div onClick={()=>navigate('/about')}>
-                    <img src={fgaTechLogo} className="w-28 cursor-pointer" alt="Vite logo"/>
+        <div className={"h-screen flex flex-col justify-center items-center overflow-y-hidden"}>
+            <div className={"h-screen w-screen overflow-y-auto flex flex-col items-center"}>
+                <div>
+                    <a href="#" target="_blank">
+                        <img src={reactLogo} className="logo react " alt="React logo"/>
+                    </a>
                 </div>
-                <div onClick={() => navigate('/about')}>
-                    <img src={reactLogo} className="w-28  cursor-pointer" alt="React logo"/>
+                <h1>Webview Tools</h1>
+                <div className={"limit-width mt-6"}>
+                    {
+                        userInfo ? (
+                                <div className={"w-full flex flex-col items-center"}>
+                                    <h2>User Info</h2>
+                                    <img src={userInfo.picture} alt="User Picture" style={{
+                                        borderRadius: '50%',
+                                        width: '100px',
+                                        height: '100px',
+                                    }}
+                                    />
+                                    <p>Name: {userInfo.name}</p>
+                                    <p>First Name: {userInfo.given_name}</p>
+                                    <p>Last Name: {userInfo.family_name}</p>
+                                    <p>Email: {userInfo.email}</p>
+                                    <p>Sub: {userInfo.sub}</p>
+                                </div>
+                            ) :
+                            <p>Loading...</p>
+                    }
+                </div>
+                {
+                    error && (
+                        <div className={"limit-width"}>
+                            <h2>Error</h2>
+                            <p>{error.message}</p>
+                        </div>
+                    )
+                }
+
+                <div>
+                    <div className={"title"}>TOKEN</div>
+                    <textarea defaultValue={token} rows={8} className={"text-area"}></textarea>
+                </div>
+
+                <div>
+                    <div className={"title"}>TOKEN + LANG</div>
+                    <textarea value={`/?token=${token}&language=${language}`} rows={8}
+                              className={"text-area"}></textarea>
+                </div>
+
+                <div>
+                    <div className={"title"}>URL</div>
+                    <div className={"limit-width"}>
+                        {url}
+                    </div>
+                </div>
+
+
+                <div>
+                    <div className={"title"}>JWT</div>
+                    <div className={"limit-width json-display"}>
+                        {JSON.stringify(decoded, null, 4)}
+                    </div>
+                </div>
+
+                <div>
+                    <div className={"title"}>User Info</div>
+                    <div className={"limit-width json-display"}>
+                        {JSON.stringify(userInfo, null, 4)}
+                    </div>
+                </div>
+
+
+                <div>
+                    <div className={"title"}>Language</div>
+                    <div className={"limit-width"}>
+                        {language}
+                    </div>
+                </div>
+
+                <div className="card">
+                    {/*<div>*/}
+                    {/*    <button onClick={handleClick}>*/}
+                    {/*        Close the webview(/back)*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
+                    <div style={{
+                        marginTop: '30px',
+                        color: 'white',
+                    }}>
+                        <button onClick={handleClose1}>
+                            Close the webview
+                        </button>
+                    </div>
                 </div>
             </div>
-            <h1 className={"text-black font-bold text-4xl text-center my-8"}>{t("MiniApp Framework")}</h1>
-            <div>{UID} | {language}</div>
-            <div className="text-center p-8">
-                <button className={`text-white rounded-lg bg-[#1a1a1a] py-2 px-4 border-2
-                cursor-pointer border-transparent hover:border-[#192F8A] transition duration-300 ease-in-out`}
-                        onClick={() => setCount((count) => count + 1)}>
-                    {t("count is")} {count}
-                </button>
-                <p className={"my-4"}>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="text-[#888888] text-center my-4">
-                {t("Click on the logos to learn more")}
-            </p>
         </div>
     )
 }
