@@ -70,6 +70,16 @@ export default function Index() {
         }
     }, [decoded]);
 
+    const handleShare = () => {
+        console.log("Native calling share");
+        if (!window.flutter_inappwebview) return;
+        window.flutter_inappwebview
+            .callHandler("share", "Hello I am a sharing content", "https://www.google.com/")
+            .then((result) => {
+                console.log(result);
+            });
+    };
+
     return (
         <div className={"h-screen flex flex-col justify-center items-center overflow-y-hidden"}>
             <div className={"h-screen w-screen overflow-y-auto flex flex-col items-center"}>
@@ -165,6 +175,23 @@ export default function Index() {
                         </button>
                     </div>
                 </div>
+
+                <div className="card">
+                    {/*<div>*/}
+                    {/*    <button onClick={handleClick}>*/}
+                    {/*        Close the webview(/back)*/}
+                    {/*    </button>*/}
+                    {/*</div>*/}
+                    <div style={{
+                        marginTop: '30px',
+                        color: 'white',
+                    }}>
+                        <button onClick={handleShare}>
+                            Share Content
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </div>
     )
