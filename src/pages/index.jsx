@@ -177,7 +177,7 @@ export default function Index() {
                     {/*    </button>*/}
                     {/*</div>*/}
                     <div style={{
-                        marginTop: '30px',
+                        marginTop: '10px',
                         color: 'white',
                     }}>
                         <button onClick={handleClose1}>
@@ -188,7 +188,7 @@ export default function Index() {
 
                 <div className="card">
                     <div style={{
-                        marginTop: '30px',
+                        marginTop: '10px',
                         color: 'white',
                     }}>
                         <button onClick={handleShare}>
@@ -199,7 +199,7 @@ export default function Index() {
 
                 <div className="card">
                     <div style={{
-                        marginTop: '30px',
+                        marginTop: '10px',
                         color: 'white',
                     }}>
                         <button onClick={handleShareImage}>
