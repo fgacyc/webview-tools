@@ -80,6 +80,16 @@ export default function Index() {
             });
     };
 
+    const handleShareImage = () => {
+        console.log("Native calling share");
+        if (!window.flutter_inappwebview) return;
+        window.flutter_inappwebview
+            .callHandler("share", "This is an image", "https://cms.fgacyc.com/uploads/large_fahuizhichangyingxiangli_1b780283db.jpeg")
+            .then((result) => {
+                console.log(result);
+            });
+    };
+
     return (
         <div className={"h-screen flex flex-col justify-center items-center overflow-y-hidden"}>
             <div className={"h-screen w-screen overflow-y-auto flex flex-col items-center"}>
@@ -177,17 +187,23 @@ export default function Index() {
                 </div>
 
                 <div className="card">
-                    {/*<div>*/}
-                    {/*    <button onClick={handleClick}>*/}
-                    {/*        Close the webview(/back)*/}
-                    {/*    </button>*/}
-                    {/*</div>*/}
                     <div style={{
                         marginTop: '30px',
                         color: 'white',
                     }}>
                         <button onClick={handleShare}>
                             Share Content
+                        </button>
+                    </div>
+                </div>
+
+                <div className="card">
+                    <div style={{
+                        marginTop: '30px',
+                        color: 'white',
+                    }}>
+                        <button onClick={handleShareImage}>
+                            Share Image
                         </button>
                     </div>
                 </div>
