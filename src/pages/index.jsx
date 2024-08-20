@@ -74,7 +74,7 @@ export default function Index() {
         console.log("Native calling share");
         if (!window.flutter_inappwebview) return;
         window.flutter_inappwebview
-            .callHandler("share", "Hello I am a sharing content", "https://www.google.com/")
+            .callHandler("share", "text", "welcome home! we are FGACYC!","Welcome home")
             .then((result) => {
                 console.log(result);
             });
@@ -84,7 +84,7 @@ export default function Index() {
         console.log("Native calling share");
         if (!window.flutter_inappwebview) return;
         window.flutter_inappwebview
-            .callHandler("share", "This is an image", "https://cms.fgacyc.com/uploads/large_fahuizhichangyingxiangli_1b780283db.jpeg")
+            .callHandler("share", "image","Make Marketplace influence" ,"https://cms.fgacyc.com/uploads/large_fahuizhichangyingxiangli_1b780283db.jpeg")
             .then((result) => {
                 console.log(result);
             });
